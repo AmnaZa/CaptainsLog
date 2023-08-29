@@ -39,7 +39,7 @@ class Default extends React.Component {
         </head>
         <body>
           <header>
-            <h1>The Captain's Log App</h1>
+            <h1>The Captain's Log</h1>
           </header>
 
           <main>

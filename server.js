@@ -3,9 +3,10 @@
 /////////////////////////////////////////////
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+const morgan = require('morgan');
 const methodOverride = require('method-override');
+const path = require('path');
+const Log = require('./models/Logs');
 
 
 
@@ -14,33 +15,27 @@ const methodOverride = require('method-override');
 /////////////////////////////////////////////////
 const app = express()
 app.engine('jsx', require('express-react-views').createEngine());
-app.set('view engine', 'jsx')
+app.set('view engine', 'jsx');
+app.set('views', path.join(__dirname, 'views'));
+
 
 /////////////////////////////////////////////////////
 // Middleware
 /////////////////////////////////////////////////////
-// app.use(morgan('tiny')); // logging
+app.use(morgan('tiny')); // logging
 app.use(methodOverride('_method')); // override for put and delete requests from forms
 app.use(express.urlencoded({ extended: true })); // parses data sent in the body to make it usable in our app
 app.use(express.static('public')); // serves files from public statically
-
-
 
 ////////////////////////////////////////////
 // Routes
 ////////////////////////////////////////////
 
-// Log
-const logsRoutes = require('./controllers/logs');
-app.use('/logs', logsRoutes);
+app.get('/', (req, res) => {
+  res.send('your server is running... better catch it!');
+});
 
-
-
-
-
-
-
-
+app.use('/logs', require('./controllers/logs'))
 
 //////////////////////////////////////////////
 // Server Listener
