@@ -16,95 +16,121 @@ const router = express.Router();
 // REMEMBER INDUCES
 
 // Index
-router.get('/', (req, res) => {
-  Log.find({})
-    .then(foundlogs => {
-      res.render('Log/Index', { logs: foundlogs });
-    })
-    .catch(error => res.status(400).json({ error }));
+router.get('/', async (req, res) => {
+  try {
+    const foundLogs = await Log.find({});
+    res.render('Log/Index', { logs: foundLogs });
+  } catch (error) {
+    res.status(400).json({ error });
+  }
 });
-
 
 // New
 router.get('/new', (req, res) => {
-  res.render('Log/New'); // Note the uppercase "Log" and no file extension
+  res.render('Log/New');
 });
 
-// Delete
-router.delete('/:id', (req, res) => {
-  const id = req.params.id;
-
-  Log.deleteOne({ _id: id })
-    .then(data => res.redirect('/logs'))
-    .catch(error => res.status(400).json({ error }));
+// Delete (Render confirmation page)
+router.get('/:id/delete', async (req, res) => {
+  try {
+    const foundLog = await Log.findById(req.params.id);
+    if (foundLog) {
+      res.render('Log/Delete', { log: foundLog });
+    } else {
+      res.status(404).json({ error: 'Log not found' });
+    }
+  } catch (error) {
+    res.status(400).json({ error });
+  }
 });
 
-// Update
-router.put('/:id', (req, res) => {
-  const id = req.params.id
-  req.body.cost = parseFloat(req.body.cost);
+// Delete (Perform deletion)
+router.delete('/:id', async (req, res) => {
+  try {
+    const result = await Log.deleteOne({ _id: req.params.id });
+    if (result.deletedCount > 0) {
+      res.redirect('/logs');
+    } else {
+      res.status(404).json({ error: 'Log not found' });
+    }
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+});
 
-  Log.updateOne({ _id: id }, req.body, { new: true })
-    .then(data => res.redirect('/logs'))
-    .catch(error => res.status(400).json({ error }));
+// Update (Render edit form)
+router.get('/:id/edit', async (req, res) => {
+  try {
+    const foundLog = await Log.findById(req.params.id);
+    if (foundLog) {
+      res.render('Log/Edit', { log: foundLog });
+    } else {
+      res.status(404).json({ error: 'Log not found' });
+    }
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+});
+
+// Update (Perform update)
+router.put('/:id', async (req, res) => {
+  try {
+    req.body.cost = parseFloat(req.body.cost);
+    const updatedLog = await Log.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (updatedLog) {
+      res.redirect('/logs');
+    } else {
+      res.status(404).json({ error: 'Log not found' });
+    }
+  } catch (error) {
+    res.status(400).json({ error });
+  }
 });
 
 // Create
-router.post('/', (req, res) => {
-  req.body.cost = parseFloat(req.body.cost);
-  Log.create(req.body)
-    .then(data => res.redirect('/logs'))
-    .catch(error => res.status(400).json({ error }));
+router.post('/', async (req, res) => {
+  try {
+    req.body.cost = parseFloat(req.body.cost);
+    await Log.create(req.body);
+    res.redirect('/logs');
+  } catch (error) {
+    res.status(400).json({ error });
+  }
 });
-
-// Edit
-router.get('/:id/edit', (req, res) => {
-  const id = req.params.id;
-  Log.findById(id)
-    .then(foundLog => {
-      // Render the edit page with the foundLog
-    })
-    .catch(error => res.status(400).json({ error }));
-});
-
 
 // Show
-router.get('/:id', (req, res) => {
-  const id = req.params.id;
-  Log.findById(id)
-    .then(foundLog => {
-      // Render the show page with the foundLog
-    })
-    .catch(error => res.status(400).json({ error }));
+router.get('/:id', async (req, res) => {
+  try {
+    const foundLog = await Log.findById(req.params.id);
+    if (foundLog) {
+      res.render('Log/Show', { log: foundLog });
+    } else {
+      res.status(404).json({ error: 'Log not found' });
+    }
+  } catch (error) {
+    res.status(400).json({ error });
+  }
 });
 
-// // SEED ROUTE
-// router.get('/seed', (req, res) => {
-//   // array of starter logs
-//   const starterlogs = [
-//     { name: "Chips", cost: 3.99, calories: 200 },
-//     { name: "Cookies", cost: 4.99, calories: 1000 },
-//     { name: 'Chocolate', cost: 1.99, calories: 400 },
-//     { name: 'Nuts', cost: 2.99, calories: 500 }
-//   ];
+// Seed route
+router.get('/seed', (req, res) => {
+  const starterLogs = [
+    { title: "Log 1", entry: "Entry 1", shipIsBroken: true },
+    { title: "Log 2", entry: "Entry 2", shipIsBroken: false },
+    // Add more starter logs here...
+  ];
 
-//   // Delete all logs
-//   Log.deleteMany({})
-//     .then(data => {
-//       Log.create(starterlogs)
-//         .then(data => {
-//           res.status(200).json(data);
-//         })
-//         .catch(error => {
-//           res.status(400).json(error);
-//         });
-//     })
-//     .catch(error => {
-//       res.status(400).json(error);
-//     });
-// });
+  Log.deleteMany({}) // Clear existing logs
+    .then(() => {
+      Log.insertMany(starterLogs) // Insert new logs
+        .then(() => res.status(200).send("Database seeded successfully"))
+        .catch(error => res.status(500).json({ error }));
+    })
+    .catch(error => res.status(500).json({ error }));
+});
 
-//////////////////////////////////////////
-// Export the Router
-//////////////////////////////////////////
+
+
+
+
 module.exports = router;

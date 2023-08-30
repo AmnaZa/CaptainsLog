@@ -40,5 +40,5 @@ app.use('/logs', require('./controllers/logs'))
 //////////////////////////////////////////////
 // Server Listener
 //////////////////////////////////////////////
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Now listening on port ${PORT}`))

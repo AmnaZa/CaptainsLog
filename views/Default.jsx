@@ -5,10 +5,10 @@ class Default extends React.Component {
     return (
       <html lang="en">
         <head>
-          <meta charset="UTF-8" />
-          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <meta charSet="UTF-8" />
+          <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>My Fruits Website</title>
+          <title>Captain's Logs</title>
           {/* Milligram CSS for Some Default Styling */}
           {/* Google Fonts */}
           <link
@@ -32,24 +32,23 @@ class Default extends React.Component {
           <script
             src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-            crossorigin="anonymous"
+            crossOrigin="anonymous"
           ></script>
 
           {/* OUR CSS AND JS */}
+          <link rel="stylesheet" href="/styles.css" />
         </head>
         <body>
           <header>
-            <h1>The Captain's Log</h1>
+            <h1>The Captain's Logs</h1>
           </header>
 
-          <main>
-            {this.props.children}
-          </main>
+          <main>{this.props.children}</main>
 
           <footer></footer>
         </body>
       </html>
-    )
+    );
   }
 }
 
