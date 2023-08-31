@@ -1,36 +1,28 @@
-////////////////////////////////////////
-// Import Dependencies
-////////////////////////////////////////
 const express = require("express");
 const Log = require("../models/Logs");
 
-/////////////////////////////////////////
-// Create Router
-/////////////////////////////////////////
 const router = express.Router();
 
-/////////////////////////////////////////
-// Routes
-/////////////////////////////////////////
 
-// REMEMBER INDUCES
 
-// Index
+// Index - Display all logs
 router.get('/', async (req, res) => {
   try {
     const foundLogs = await Log.find({});
+    console.log(foundLogs); // Add this line
     res.render('Log/Index', { logs: foundLogs });
   } catch (error) {
     res.status(400).json({ error });
   }
 });
 
-// New
+
+// New - Display form to create a new log
 router.get('/new', (req, res) => {
   res.render('Log/New');
 });
 
-// Delete (Render confirmation page)
+// Delete - Render confirmation page for log deletion
 router.get('/:id/delete', async (req, res) => {
   try {
     const foundLog = await Log.findById(req.params.id);
@@ -44,7 +36,7 @@ router.get('/:id/delete', async (req, res) => {
   }
 });
 
-// Delete (Perform deletion)
+// Delete - Perform log deletion
 router.delete('/:id', async (req, res) => {
   try {
     const result = await Log.deleteOne({ _id: req.params.id });
@@ -58,7 +50,7 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Update (Render edit form)
+// Edit - Render edit form for a log
 router.get('/:id/edit', async (req, res) => {
   try {
     const foundLog = await Log.findById(req.params.id);
@@ -72,10 +64,9 @@ router.get('/:id/edit', async (req, res) => {
   }
 });
 
-// Update (Perform update)
+//update
 router.put('/:id', async (req, res) => {
   try {
-    req.body.cost = parseFloat(req.body.cost);
     const updatedLog = await Log.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (updatedLog) {
       res.redirect('/logs');
@@ -87,10 +78,11 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Create
+module.exports = router;
+
+// Create - Create a new log entry
 router.post('/', async (req, res) => {
   try {
-    req.body.cost = parseFloat(req.body.cost);
     await Log.create(req.body);
     res.redirect('/logs');
   } catch (error) {
@@ -98,7 +90,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Show
+// Show - Display details of a specific log entry
 router.get('/:id', async (req, res) => {
   try {
     const foundLog = await Log.findById(req.params.id);
@@ -112,7 +104,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Seed route
+// Seed route - Populate the database with starter logs
 router.get('/seed', (req, res) => {
   const starterLogs = [
     { title: "Log 1", entry: "Entry 1", shipIsBroken: true },
@@ -128,9 +120,5 @@ router.get('/seed', (req, res) => {
     })
     .catch(error => res.status(500).json({ error }));
 });
-
-
-
-
 
 module.exports = router;

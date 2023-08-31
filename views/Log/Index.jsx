@@ -2,6 +2,7 @@ const React = require('react');
 const DefaultLayout = require('../Default');
 
 const Index = (props) => {
+  console.log(props.logs.length);
   return (
     <DefaultLayout>
       <div>
@@ -15,7 +16,7 @@ const Index = (props) => {
                 {log.entry}<br />
                 {log.shipIsBroken ? `Ship is Broken` : `Ship is not Broken`}<br />
                 <br />
-                <a href={`/edit/${log._id}`}>Edit This Log</a> | 
+                <a href={`/edit/${log._id}`}>Edit This Log</a> |
                 <a href={`/logs/${log._id}/delete`}>Delete</a> {/* Add this line */}
               </li>
             );

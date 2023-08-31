@@ -1,16 +1,22 @@
-const mongoose = require('./connection');
-const Log = require('./models/Logs'); // Assuming this is the correct path to your Log model
+const mongoose = require('mongoose');
+const Log = require('./logs'); // Use './Logs' instead of './models/Logs'
+
+mongoose.connect('mongodb://localhost:27017/logs', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 const db = mongoose.connection;
-router.get('/seed', (req, res) => {
+
 db.once('open', async () => {
   try {
-    // Array of starter logs
+    console.log('Starting seeding process...');
     const starterLogs = [
       { title: "First Entry", entry: "This is the first log entry.", shipIsBroken: true },
       { title: "Exploration", entry: "Today, we explored a new planet.", shipIsBroken: false },
       // Add more log entries here
     ];
+    console.log('Starter logs:', starterLogs);
 
     // Delete all existing logs
     await Log.deleteMany({});
