@@ -1,33 +1,49 @@
-const mongoose = require('mongoose');
-const Log = require('./logs'); // Use './Logs' instead of './models/Logs'
+const express = require("express")
+const log = require("../models/Logs")
 
-mongoose.connect('mongodb://localhost:27017/logs', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const seedLogs = [
+  {
+    title: "Two",
+    entry: "Day Two. Stranded on island...",
+    shipIsBroken: true,
+  },
+  {
+    title: "Three",
+    entry: "Day Three. I fear all is lost.",
+    shipIsBroken: true,
+  },
+  {
+    title: "Four",
+    entry: "HELP ME!!!!!!",
+    shipIsBroken: true,
+  },
+  {
+    title: "One",
+    entry: "Day One. Got lost in storm last night...",
+    shipIsBroken: false,
+  },
+  {
+    title: "Five",
+    entry: "Day Five. Making progress on repairs.",
+    shipIsBroken: true,
+  },
+  {
+    title: "Six",
+    entry: "Day Six. Discovered strange creatures on the island.",
+    shipIsBroken: false,
+  },
+]
+const router = express.Router()
 
-const db = mongoose.connection;
+router.get("/", (req, res) => {
+  log.insertMany(seedLogs, (err, allLogs) => {
+    if (err) {
+      res.status(400).json({ message: err.message })
+    } else {
+      res.status(201).json(allLogs)
+    }
+  })
+})
 
-db.once('open', async () => {
-  try {
-    console.log('Starting seeding process...');
-    const starterLogs = [
-      { title: "First Entry", entry: "This is the first log entry.", shipIsBroken: true },
-      { title: "Exploration", entry: "Today, we explored a new planet.", shipIsBroken: false },
-      // Add more log entries here
-    ];
-    console.log('Starter logs:', starterLogs);
 
-    // Delete all existing logs
-    await Log.deleteMany({});
-
-    // Create the initial log entries
-    await Log.create(starterLogs);
-
-    console.log('Seeding completed successfully.');
-  } catch (error) {
-    console.error('Error seeding database:', error);
-  } finally {
-    db.close();
-  }
-});
+module.exports = router

@@ -2,11 +2,12 @@
 // Import Our Dependencies
 /////////////////////////////////////////////
 require('dotenv').config();
+const Log = require('./models/Logs');
 const express = require('express');
 const morgan = require('morgan');
 const methodOverride = require('method-override');
+const seedLogs = require("./models/seed")
 const path = require('path');
-const Log = require('./models/Logs');
 
 
 
@@ -34,7 +35,7 @@ app.use(express.static('public')); // serves files from public statically
 app.get('/', (req, res) => {
   res.send('your server is running... better catch it!');
 });
-
+app.use("/seed", seedLogs)
 app.use('/logs', require('./controllers/logs'))
 
 //////////////////////////////////////////////
